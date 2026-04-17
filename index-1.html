@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f9e4ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi Día">
+<link rel="manifest" href="manifest.json">
+<title>Mi Día</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #e8a4b8;
+    --rose-deep: #d4738a;
+    --rose-light: #f9e4ec;
+    --rose-pale: #fdf0f5;
+    --cream: #faf6f0;
+    --sage: #8aab8e;
+    --sage-light: #b5cdb8;
+    --sage-pale: #e8f0e9;
+    --warm-brown: #7a5c52;
+    --text-dark: #3d2b26;
+    --text-mid: #7a6065;
+    --text-light: #b0949a;
+    --white: #ffffff;
+    --shadow-soft: 0 4px 24px rgba(212,115,138,0.12);
+    --shadow-card: 0 2px 16px rgba(60,30,30,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    min-height: 100dvh;
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ── Background floral decoration ── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(232,164,184,0.28) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -60px; left: -60px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(138,171,142,0.22) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── App shell ── */
+  .app {
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 52px 28px 24px;
+    text-align: center;
+    position: relative;
+  }
+  .header-date {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--rose-deep);
+    margin-bottom: 6px;
+  }
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    font-weight: 300;
+    color: var(--text-dark);
+    line-height: 1.1;
+  }
+  .header-title em {
+    font-style: italic;
+    color: var(--rose-deep);
+  }
+  .floral-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 16px 0 0;
+    color: var(--rose);
+    font-size: 16px;
+    opacity: 0.7;
+  }
+  .floral-divider::before, .floral-divider::after {
+    content: '';
+    width: 48px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose-light), var(--rose));
+  }
+  .floral-divider::after {
+    background: linear-gradient(90deg, var(--rose), var(--rose-light), transparent);
+  }
+
+  /* ── Main content area ── */
+  .main {
+    flex: 1;
+    padding: 8px 20px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── Voice button section ── */
+  .voice-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px 28px;
+    background: var(--white);
+    border-radius: 28px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(232,164,184,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .voice-section::before {
+    content: '✿';
+    position: absolute;
+    top: 12px; right: 16px;
+    font-size: 18px;
+    color: var(--rose-light);
+  }
+  .voice-section::after {
+    content: '❀';
+    position: absolute;
+    bottom: 12px; left: 16px;
+    font-size: 14px;
+    color: var(--sage-light);
+  }
+
+  .voice-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    color: var(--text-mid);
+    margin-bottom: 24px;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .voice-btn-wrap {
+    position: relative;
+    width: 128px; height: 128px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  /* Pulsing rings */
+  .pulse-ring {
+    position: absolute;
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,164,184,0.35), transparent 70%);
+    animation: pulse-idle 3s ease-in-out infinite;
+  }
+  .pulse-ring:nth-child(2) { animation-delay: 1s; transform: scale(1.18); opacity: 0.6; }
+  .pulse-ring:nth-child(3) { animation-delay: 2s; transform: scale(1.36); opacity: 0.3; }
+
+  @keyframes pulse-idle {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.12); opacity: 0.3; }
+  }
+  .pulse-ring:nth-child(2) { animation: pulse-idle2 3s ease-in-out infinite 1s; }
+  @keyframes pulse-idle2 {
+    0%, 100% { transform: scale(1.18); opacity: 0.5; }
+    50% { transform: scale(1.28); opacity: 0.2; }
+  }
+  .pulse-ring:nth-child(3) { animation: pulse-idle3 3s ease-in-out infinite 2s; }
+  @keyframes pulse-idle3 {
+    0%, 100% { transform: scale(1.36); opacity: 0.25; }
+    50% { transform: scale(1.5); opacity: 0.1; }
+  }
+
+  .voice-btn {
+    position: relative;
+    z-index: 2;
+    width: 92px; height: 92px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(145deg, var(--rose), var(--rose-deep));
+    box-shadow: 0 6px 24px rgba(212,115,138,0.4), 0 2px 8px rgba(212,115,138,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    outline: none;
+  }
+  .voice-btn:active { transform: scale(0.94); }
+  .voice-btn.recording {
+    background: linear-gradient(145deg, var(--rose-deep), #c0566e);
+    animation: recording-pulse 1s ease-in-out infinite;
+    box-shadow: 0 6px 32px rgba(192,86,110,0.55);
+  }
+  @keyframes recording-pulse {
+    0%, 100% { box-shadow: 0 6px 32px rgba(192,86,110,0.55); }
+    50% { box-shadow: 0 6px 48px rgba(192,86,110,0.75), 0 0 0 8px rgba(192,86,110,0.15); }
+  }
+  .voice-btn svg { width: 32px; height: 32px; fill: white; }
+  .voice-btn.processing { animation: spin-soft 2s linear infinite; }
+  @keyframes spin-soft {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .voice-status {
+    font-size: 13px;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+    min-height: 20px;
+    transition: color 0.3s;
+  }
+  .voice-status.active { color: var(--rose-deep); font-weight: 500; }
+
+  /* ── Transcript preview ── */
+  .transcript-box {
+    background: var(--rose-pale);
+    border: 1px solid rgba(232,164,184,0.3);
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-size: 14px;
+    color: var(--text-mid);
+    font-style: italic;
+    line-height: 1.6;
+    min-height: 56px;
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .transcript-box.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Agenda ── */
+  .agenda-section {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+  .agenda-section.visible { display: block; }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title span { font-size: 18px; }
+
+  .agenda-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .agenda-item {
+    background: var(--white);
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(232,164,184,0.15);
+    animation: slideIn 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+  .agenda-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--rose), var(--rose-deep));
+    border-radius: 4px 0 0 4px;
+  }
+  .agenda-item.done::before {
+    background: linear-gradient(180deg, var(--sage-light), var(--sage));
+  }
+  .agenda-item.done { opacity: 0.65; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .agenda-time {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--rose-deep);
+    min-width: 54px;
+    line-height: 1;
+    padding-top: 2px;
+  }
+  .agenda-item.done .agenda-time { color: var(--sage); }
+
+  .agenda-info { flex: 1; }
+  .agenda-task {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-dark);
+    line-height: 1.4;
+  }
+  .agenda-item.done .agenda-task { text-decoration: line-through; color: var(--text-light); }
+  .agenda-note {
+    font-size: 12.5px;
+    color: var(--text-light);
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  .agenda-check {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--rose-light);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.25s;
+    margin-top: 2px;
+  }
+  .agenda-check:active { transform: scale(0.9); }
+  .agenda-check.checked {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .agenda-check.checked::after {
+    content: '✓';
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  /* Reminder badge */
+  .reminder-badge {
+    position: absolute;
+    top: 10px; right: 12px;
+    font-size: 10px;
+    background: var(--sage-pale);
+    color: var(--sage);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(232,164,184,0.2);
+    padding: 12px 20px 20px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 100;
+  }
+  .nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 16px;
+    border-radius: 14px;
+    transition: background 0.2s;
+  }
+  .nav-btn.active { background: var(--rose-pale); }
+  .nav-icon { font-size: 22px; }
+  .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    text-transform: uppercase;
+  }
+  .nav-btn.active .nav-label { color: var(--rose-deep); }
+
+  /* ── Settings panel ── */
+  .settings-panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .settings-panel.visible { display: block; }
+
+  .settings-card {
+    background: var(--white);
+    border-radius: 22px;
+    padding: 22px 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(232,164,184,0.15);
+    margin-bottom: 14px;
+  }
+  .settings-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .settings-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rose-light);
+  }
+
+  .reminder-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .reminder-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--rose-light);
+    background: transparent;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reminder-chip.selected {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: white;
+    font-weight: 500;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--rose-light);
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    background: var(--rose-pale);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .name-input:focus { border-color: var(--rose); }
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(212,115,138,0.35);
+  }
+  .save-btn:active { transform: scale(0.97); }
+
+  /* ── Toast notification ── */
+  .toast {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--text-dark);
+    color: white;
+    padding: 14px 22px;
+    border-radius: 16px;
+    font-size: 14px;
+    z-index: 999;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-light);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* ── Install banner ── */
+  .install-banner {
+    background: linear-gradient(135deg, var(--sage-pale), var(--rose-pale));
+    border: 1px solid rgba(138,171,142,0.3);
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    display: none;
+  }
+  .install-banner.visible { display: flex; }
+  .install-text { flex: 1; font-size: 13.5px; color: var(--text-mid); line-height: 1.5; }
+  .install-text strong { color: var(--text-dark); display: block; font-size: 14px; margin-bottom: 2px; }
+  .install-btn-small {
+    padding: 8px 16px;
+    background: var(--sage);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* Scrollbar */
+  .main::-webkit-scrollbar { width: 0; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-date" id="headerDate">Cargando...</div>
+    <h1 class="header-title">Mi <em>Día</em></h1>
+    <div class="floral-divider">✿</div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="main" id="screenHome">
+
+    <div class="install-banner" id="installBanner">
+      <span style="font-size:28px">🌸</span>
+      <div class="install-text">
+        <strong>Instalá la app</strong>
+        Agregá Mi Día a tu pantalla de inicio para usarla sin el navegador
+      </div>
+      <button class="install-btn-small" id="installBtn">Instalar</button>
+    </div>
+
+    <!-- Voice section -->
+    <div class="voice-section">
+      <div class="voice-label" id="greeting">¿Cómo está tu día, Laura?</div>
+      <div class="voice-btn-wrap">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <button class="voice-btn" id="voiceBtn" onclick="toggleRecording()">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 3a1 1 0 0 1 2 0v8a1 1 0 0 1-2 0V4zM7 11a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.92V20h3v2H8v-2h3v-2.08A7 7 0 0 1 5 11h2z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="voice-status" id="voiceStatus">Tocá para contarme tu día</div>
+    </div>
+
+    <div class="transcript-box" id="transcriptBox"></div>
+
+    <!-- Agenda -->
+    <div class="agenda-section" id="agendaSection">
+      <div class="section-title"><span>🌸</span> Tu agenda de hoy</div>
+      <div class="agenda-list" id="agendaList"></div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      Tocá el botón de arriba<br>y contame cómo es tu día...
+    </div>
+
+  </div>
+
+  <!-- SETTINGS SCREEN -->
+  <div class="main settings-panel" id="screenSettings">
+    <div class="settings-card">
+      <div class="settings-label">Tu nombre</div>
+      <input type="text" class="name-input" id="nameInput" placeholder="Laura" />
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-label">Avisarme antes de cada evento</div>
+      <div class="reminder-options">
+        <button class="reminder-chip" data-min="5" onclick="selectReminder(this)">5 min</button>
+        <button class="reminder-chip selected" data-min="10" onclick="selectReminder(this)">10 min</button>
+        <button class="reminder-chip" data-min="15" onclick="selectReminder(this)">15 min</button>
+        <button class="reminder-chip" data-min="20" onclick="selectReminder(this)">20 min</button>
+        <button class="reminder-chip" data-min="30" onclick="selectReminder(this)">30 min</button>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-label">Notificaciones</div>
+      <button class="save-btn" id="notifBtn" onclick="requestNotifications()">🔔 Activar notificaciones</button>
+    </div>
+
+    <button class="save-btn" onclick="saveSettings()">Guardar cambios</button>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="navHome" onclick="showScreen('home')">
+      <span class="nav-icon">🌸</span>
+      <span class="nav-label">Mi Día</span>
+    </button>
+    <button class="nav-btn" id="navSettings" onclick="showScreen('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Ajustes</span>
+    </button>
+  </nav>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">🌸 ¡Listo!</div>
+
+<script>
+// ── State ──
+let isRecording = false;
+let recognition = null;
+let settings = { name: 'Laura', reminderMin: 10 };
+let agenda = [];
+let deferredPrompt = null;
+let notifPermission = Notification.permission;
+
+// ── Init ──
+function init() {
+  loadSettings();
+  updateDate();
+  setupRecognition();
+  loadAgenda();
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBanner').classList.add('visible');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('installBanner').classList.remove('visible');
+  });
+
+  document.getElementById('installBtn').onclick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') document.getElementById('installBanner').classList.remove('visible');
+      deferredPrompt = null;
+    }
+  };
+
+  if (notifPermission === 'granted') {
+    document.getElementById('notifBtn').textContent = '✅ Notificaciones activadas';
+  }
+}
+
+function updateDate() {
+  const now = new Date();
+  const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+  const dateStr = now.toLocaleDateString('es-AR', opts);
+  document.getElementById('headerDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+  const hour = now.getHours();
+  let greet = '¿Cómo está tu día, ';
+  if (hour < 12) greet = 'Buenos días, ';
+  else if (hour < 19) greet = 'Buenas tardes, ';
+  else greet = 'Buenas noches, ';
+  document.getElementById('greeting').textContent = greet + (settings.name || 'Laura') + ' 🌸';
+}
+
+// ── Settings ──
+function loadSettings() {
+  const saved = localStorage.getItem('midiSettings');
+  if (saved) settings = JSON.parse(saved);
+  document.getElementById('nameInput').value = settings.name || '';
+  document.querySelectorAll('.reminder-chip').forEach(c => {
+    c.classList.toggle('selected', parseInt(c.dataset.min) === settings.reminderMin);
+  });
+}
+
+function saveSettings() {
+  settings.name = document.getElementById('nameInput').value || 'Laura';
+  showToast('✅ Cambios guardados');
+  localStorage.setItem('midiSettings', JSON.stringify(settings));
+  updateDate();
+  showScreen('home');
+}
+
+function selectReminder(el) {
+  document.querySelectorAll('.reminder-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  settings.reminderMin = parseInt(el.dataset.min);
+}
+
+async function requestNotifications() {
+  if ('Notification' in window) {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      document.getElementById('notifBtn').textContent = '✅ Notificaciones activadas';
+      notifPermission = 'granted';
+      showToast('🔔 Notificaciones activadas');
+    } else {
+      showToast('⚠️ Permiso denegado');
+    }
+  }
+}
+
+// ── Screen navigation ──
+function showScreen(screen) {
+  document.getElementById('screenHome').style.display = screen === 'home' ? 'flex' : 'none';
+  document.getElementById('screenSettings').style.display = screen === 'settings' ? 'flex' : 'none';
+  document.getElementById('navHome').classList.toggle('active', screen === 'home');
+  document.getElementById('navSettings').classList.toggle('active', screen === 'settings');
+}
+
+// ── Voice recognition ──
+function setupRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    document.getElementById('voiceStatus').textContent = 'Tu navegador no soporta voz 😔';
+    return;
+  }
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'es-AR';
+
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('transcriptBox').textContent = transcript;
+    document.getElementById('transcriptBox').classList.add('visible');
+    if (e.results[e.results.length - 1].isFinal) {
+      processTranscript(transcript);
+    }
+  };
+
+  recognition.onend = () => {
+    if (isRecording) stopRecording();
+  };
+
+  recognition.onerror = (e) => {
+    stopRecording();
+    if (e.error !== 'no-speech') showToast('⚠️ Error de micrófono');
+  };
+}
+
+function toggleRecording() {
+  if (isRecording) stopRecording();
+  else startRecording();
+}
+
+function startRecording() {
+  if (!recognition) return;
+  isRecording = true;
+  document.getElementById('voiceBtn').classList.add('recording');
+  document.getElementById('voiceStatus').textContent = 'Escuchando...';
+  document.getElementById('voiceStatus').classList.add('active');
+  document.getElementById('transcriptBox').textContent = '';
+  document.getElementById('transcriptBox').classList.add('visible');
+  recognition.start();
+}
+
+function stopRecording() {
+  isRecording = false;
+  document.getElementById('voiceBtn').classList.remove('recording');
+  document.getElementById('voiceStatus').textContent = 'Procesando...';
+  try { recognition.stop(); } catch(e) {}
+}
+
+// ── IA: Process transcript with Claude API ──
+async function processTranscript(text) {
+  if (!text.trim()) return;
+
+  document.getElementById('voiceBtn').classList.add('processing');
+  document.getElementById('voiceStatus').textContent = 'Organizando tu día...';
+
+  try {
+    const today = new Date().toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
+    const now = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Sos una asistente personal femenina, cálida y organizada. Hoy es ${today}, son las ${now} (Argentina).
+Tu tarea: recibís el relato del día de ${settings.name || 'Laura'} y extraés TODAS las tareas/actividades/compromisos con sus horarios.
+Respondé SOLO con un JSON válido sin markdown, sin texto extra, así:
+{"items":[{"hora":"09:00","tarea":"Reunión con el médico","nota":"llevar estudios"},...]}
+Si no hay hora clara, estimá según el contexto del día. Ordená por hora. Devolvé solo JSON.`,
+        messages: [{ role: 'user', content: text }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content?.[0]?.text || '{}';
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch {
+      parsed = { items: [] };
+    }
+
+    agenda = (parsed.items || []).map((item, i) => ({
+      id: Date.now() + i,
+      hora: item.hora || '??:??',
+      tarea: item.tarea || 'Tarea',
+      nota: item.nota || '',
+      done: false
+    }));
+
+    saveAgenda();
+    renderAgenda();
+    scheduleNotifications();
+    showToast('🌸 ¡Agenda lista!');
+
+  } catch (err) {
+    console.error(err);
+    showToast('⚠️ No pude conectarme. Revisá internet.');
+  }
+
+  document.getElementById('voiceBtn').classList.remove('processing');
+  document.getElementById('voiceStatus').textContent = 'Tocá para contarme tu día';
+  document.getElementById('voiceStatus').classList.remove('active');
+}
+
+// ── Agenda render ──
+function renderAgenda() {
+  const list = document.getElementById('agendaList');
+  const section = document.getElementById('agendaSection');
+  const empty = document.getElementById('emptyState');
+
+  if (!agenda.length) {
+    section.classList.remove('visible');
+    empty.style.display = 'block';
+    return;
+  }
+
+  section.classList.add('visible');
+  empty.style.display = 'none';
+
+  list.innerHTML = agenda.map((item, i) => `
+    <div class="agenda-item ${item.done ? 'done' : ''}" id="item-${item.id}" style="animation-delay:${i*0.07}s">
+      <div class="agenda-time">${item.hora}</div>
+      <div class="agenda-info">
+        <div class="agenda-task">${item.tarea}</div>
+        ${item.nota ? `<div class="agenda-note">${item.nota}</div>` : ''}
+      </div>
+      <div class="reminder-badge">-${settings.reminderMin}min</div>
+      <button class="agenda-check ${item.done ? 'checked' : ''}" onclick="toggleDone(${item.id})"></button>
+    </div>
+  `).join('');
+}
+
+function toggleDone(id) {
+  const item = agenda.find(a => a.id === id);
+  if (item) {
+    item.done = !item.done;
+    saveAgenda();
+    renderAgenda();
+  }
+}
+
+function saveAgenda() {
+  localStorage.setItem('midiAgenda', JSON.stringify({ date: new Date().toDateString(), items: agenda }));
+}
+
+function loadAgenda() {
+  const saved = localStorage.getItem('midiAgenda');
+  if (saved) {
+    const data = JSON.parse(saved);
+    if (data.date === new Date().toDateString()) {
+      agenda = data.items || [];
+      if (agenda.length) {
+        renderAgenda();
+        document.getElementById('emptyState').style.display = 'none';
+      }
+    }
+  }
+}
+
+// ── Notifications ──
+function scheduleNotifications() {
+  if (notifPermission !== 'granted') return;
+
+  agenda.forEach(item => {
+    if (!item.hora || item.hora === '??:??') return;
+    const [h, m] = item.hora.split(':').map(Number);
+    const now = new Date();
+    const event = new Date(now);
+    event.setHours(h, m, 0, 0);
+    const notifTime = new Date(event.getTime() - settings.reminderMin * 60000);
+
+    const delay = notifTime.getTime() - now.getTime();
+    if (delay > 0) {
+      setTimeout(() => {
+        new Notification('🌸 Mi Día', {
+          body: `En ${settings.reminderMin} minutos: ${item.tarea}`,
+          icon: 'icon-192.png',
+          badge: 'icon-192.png'
+        });
+      }, delay);
+    }
+  });
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Service Worker ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// ── Run ──
+init();
+</script>
+</body>
+</html>
